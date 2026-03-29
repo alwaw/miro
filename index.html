@@ -6,139 +6,54 @@
 <title>Obłożenie zespołu</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f8f8f6;
-    color: #1a1a1a;
-    font-size: 13px;
-    padding: 0;
-    overflow-x: hidden;
-  }
-
-  .app { padding: 16px; max-width: 100%; }
-
-  /* ── header ── */
-  .header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .header h1 { font-size: 15px; font-weight: 600; color: #1a1a1a; }
-  .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-  .controls label { font-size: 12px; color: #666; }
-  select, input[type=number] {
-    font-size: 12px;
-    padding: 4px 8px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    background: #fff;
-    color: #1a1a1a;
-  }
-  input[type=number] { width: 60px; }
-
-  /* ── tabs ── */
-  .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
-  .tab {
-    padding: 4px 14px;
-    border-radius: 12px;
-    border: 1px solid #ddd;
-    background: #f0efea;
-    color: #666;
-    font-size: 12px;
-    cursor: pointer;
-    transition: all .15s;
-  }
-  .tab.active { background: #4262ff; color: #fff; border-color: #4262ff; }
-
-  /* ── summary cards ── */
-  .summary {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-    gap: 8px;
-    margin-bottom: 16px;
-  }
-  .card {
-    background: #fff;
-    border: 1px solid #e8e8e4;
-    border-radius: 8px;
-    padding: 10px 12px;
-  }
-  .card .lbl { font-size: 11px; color: #888; margin-bottom: 3px; }
-  .card .val { font-size: 20px; font-weight: 600; }
-  .card .sub { font-size: 10px; color: #aaa; margin-top: 2px; }
-  .ok  { color: #1D9E75; }
-  .warn{ color: #BA7517; }
-  .over{ color: #A32D2D; }
-
-  /* ── chart ── */
-  .chart-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-  .chart-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 10px; }
-  .chart-wrap { position: relative; width: 100%; height: 220px; }
-
-  /* ── free capacity table ── */
-  .free-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-  .free-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 10px; }
-  table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  th {
-    text-align: left;
-    padding: 5px 8px;
-    border-bottom: 1px solid #e8e8e4;
-    font-weight: 500;
-    color: #888;
-    font-size: 11px;
-  }
-  td { padding: 5px 8px; border-bottom: 1px solid #f0efea; }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; }
-  .bar-wrap { height: 10px; background: #f0efea; border-radius: 3px; overflow: hidden; position: relative; }
-  .bar-used { height: 100%; border-radius: 3px; position: absolute; top: 0; left: 0; }
-  .bar-free { height: 100%; border-radius: 3px; position: absolute; top: 0; background: #e1f5ee; }
-  tr:last-child td { border-bottom: none; }
-  tr.person-row td { background: #f8f8f6; font-weight: 500; font-size: 12px; }
-
-  /* ── paste panel ── */
-  .paste-panel { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
-  .paste-panel .lbl { font-size: 12px; font-weight: 500; margin-bottom: 6px; }
-  textarea {
-    width: 100%;
-    height: 100px;
-    font-size: 11px;
-    font-family: monospace;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    padding: 8px;
-    background: #fafafa;
-    color: #1a1a1a;
-    resize: vertical;
-  }
-  textarea:focus { outline: none; border-color: #4262ff; }
-  .btn-row { display: flex; gap: 8px; margin-top: 8px; }
-  button {
-    padding: 5px 14px;
-    border-radius: 6px;
-    border: 1px solid #ddd;
-    background: #f0efea;
-    color: #1a1a1a;
-    font-size: 12px;
-    cursor: pointer;
-  }
-  button.primary { background: #4262ff; color: #fff; border-color: #4262ff; }
-  .hint { font-size: 10px; color: #aaa; margin-top: 4px; }
-  .err { font-size: 11px; color: #A32D2D; margin-top: 6px; }
-
-  /* ── legend ── */
-  .legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #888; margin-bottom: 10px; }
-  .leg { display: flex; align-items: center; gap: 4px; }
-  .leg-sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f8f8f6; color: #1a1a1a; font-size: 13px; }
+.app { padding: 16px; max-width: 100%; }
+.header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 8px; }
+.header h1 { font-size: 15px; font-weight: 600; }
+.controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.controls label { font-size: 12px; color: #666; }
+select, input[type=number] { font-size: 12px; padding: 4px 8px; border: 1px solid #ddd; border-radius: 6px; background: #fff; color: #1a1a1a; }
+input[type=number] { width: 60px; }
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.tab { padding: 4px 14px; border-radius: 12px; border: 1px solid #ddd; background: #f0efea; color: #666; font-size: 12px; cursor: pointer; }
+.tab.active { background: #4262ff; color: #fff; border-color: #4262ff; }
+.summary { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 8px; margin-bottom: 16px; }
+.card { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 10px 12px; }
+.card .lbl { font-size: 11px; color: #888; margin-bottom: 3px; }
+.card .val { font-size: 20px; font-weight: 600; }
+.card .sub { font-size: 10px; color: #aaa; margin-top: 2px; }
+.ok { color: #1D9E75; } .warn { color: #BA7517; } .over { color: #A32D2D; }
+.chart-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+.chart-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 10px; }
+.chart-wrap { position: relative; width: 100%; height: 220px; }
+.free-section { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+.free-title { font-size: 12px; font-weight: 500; color: #666; margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; }
+th { text-align: left; padding: 5px 8px; border-bottom: 1px solid #e8e8e4; font-weight: 500; color: #888; font-size: 11px; }
+td { padding: 5px 8px; border-bottom: 1px solid #f0efea; }
+td.num { text-align: right; font-variant-numeric: tabular-nums; }
+tr:last-child td { border-bottom: none; }
+.bar-wrap { height: 10px; background: #f0efea; border-radius: 3px; overflow: hidden; position: relative; }
+.bar-used { height: 100%; border-radius: 3px; position: absolute; top: 0; left: 0; }
+.bar-free { height: 100%; border-radius: 3px; position: absolute; top: 0; background: #e1f5ee; }
+.paste-panel { background: #fff; border: 1px solid #e8e8e4; border-radius: 8px; padding: 14px; margin-bottom: 14px; }
+.paste-panel .lbl { font-size: 12px; font-weight: 500; margin-bottom: 6px; }
+textarea { width: 100%; height: 100px; font-size: 11px; font-family: monospace; border: 1px solid #ddd; border-radius: 6px; padding: 8px; background: #fafafa; color: #1a1a1a; resize: vertical; }
+textarea:focus { outline: none; border-color: #4262ff; }
+.btn-row { display: flex; gap: 8px; margin-top: 8px; }
+button { padding: 5px 14px; border-radius: 6px; border: 1px solid #ddd; background: #f0efea; color: #1a1a1a; font-size: 12px; cursor: pointer; }
+button.primary { background: #4262ff; color: #fff; border-color: #4262ff; }
+.hint { font-size: 10px; color: #aaa; margin-top: 4px; }
+.err { font-size: 11px; color: #A32D2D; margin-top: 6px; min-height: 16px; }
+.legend { display: flex; gap: 12px; flex-wrap: wrap; font-size: 11px; color: #888; margin-bottom: 10px; }
+.leg { display: flex; align-items: center; gap: 4px; }
+.leg-sq { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+.debug { font-size: 10px; color: #aaa; margin-top: 4px; font-family: monospace; }
 </style>
 </head>
 <body>
 <div class="app">
-
   <div class="header">
     <h1>Obłożenie zespołu</h1>
     <div class="controls">
@@ -156,7 +71,7 @@
   <div id="output" style="display:none">
     <div class="summary" id="summary-cards"></div>
     <div class="chart-section">
-      <div class="chart-title" id="chart-title">Godziny wykonane per projekt (per tydzień)</div>
+      <div class="chart-title" id="chart-title"></div>
       <div class="legend" id="legend"></div>
       <div class="chart-wrap"><canvas id="myChart"></canvas></div>
     </div>
@@ -166,123 +81,100 @@
     </div>
   </div>
 
-  <div class="paste-panel" id="paste-panel">
+  <div class="paste-panel">
     <div class="lbl">Wklej dane z tabeli Miro (zaznacz wszystko w tabeli → Ctrl+C → tu Ctrl+V)</div>
-    <textarea id="raw" placeholder="Zadanie&#9;Data Ewidencji&#9;Tydzień&#9;Projekt&#9;Osoba&#9;Wykonanie&#9;Plan&#9;Przepalenie (%)&#9;Odchył (h)
-Smurfit&#9;Mar 2, 2026&#9;10&#9;Szkolenie&#9;Asia&#9;4,00&#9;4,00&#9;100%&#9;0,0
-Fabric&#9;Mar 2, 2026&#9;10&#9;Szkolenie&#9;Asia&#9;1,00&#9;1,00&#9;100%&#9;0,0"></textarea>
+    <textarea id="raw" placeholder="Wklej tu dane skopiowane z tabeli Miro..."></textarea>
     <div class="btn-row">
       <button class="primary" onclick="parseAndRender()">Przelicz</button>
       <button onclick="loadDemo()">Załaduj przykład</button>
     </div>
-    <div class="hint">Kolejność kolumn: Zadanie | Data | Tydzień | Projekt | Osoba | Wykonanie | Plan | ...</div>
+    <div class="hint">Obsługuje eksport z Miro z datami w formacie 2026-03-16T00:00:00.000Z oraz numerem tygodnia w osobnej kolumnie.</div>
     <div class="err" id="err"></div>
+    <div class="debug" id="debug"></div>
   </div>
-
 </div>
 
 <script>
-const PROJ_COLORS = ['#7F77DD','#D85A30','#1D9E75','#378ADD','#EF9F27','#D4537E','#5DCAA5','#BA7517','#85B7EB','#F0997B'];
+const PROJ_COLORS = ['#7F77DD','#D85A30','#1D9E75','#378ADD','#EF9F27','#D4537E','#5DCAA5','#BA7517','#85B7EB','#F0997B','#534AB7','#993C1D'];
 let DATA = [];
 let activeTab = 'exec';
 let chart = null;
 
-const DEMO = `Zadanie\tData Ewidencji\tTydzień\tProjekt\tOsoba\tWykonanie\tPlan\tPrzepalenie (%)\tOdchył (h)
-Smurfit\tMar 2, 2026\t10\tSzkolenie\tAsia\t4,00\t4,00\t100%\t0,0
-Fabric\tMar 2, 2026\t10\tSzkolenie\tAsia\t1,00\t1,00\t100%\t0,0
-Pliki\tMar 2, 2026\t10\tINDEKA\tAsia\t2,00\t\t\t
-Weekly\tMar 2, 2026\t10\tOrganizacyjne\tAsia\t1,00\t1,00\t100%\t0,0
-Spotkanie Smart\tMar 3, 2026\t10\tTMB Inwestycyjny\tAsia\t1,00\t\t\t
-Spotkanie\tMar 3, 2026\t10\tOrganizacyjne\tAsia\t0,50\t\t\t
-Raport KPI\tMar 3, 2026\t10\tINDEKA\tAsia\t6,00\t\t\t
-Spotkanie Indeka\tMar 5, 2026\t10\tINDEKA\tAsia\t0,50\t\t\t
-Raport KPI Stany\tMar 5, 2026\t10\tINDEKA\tAsia\t7,00\t\t\t
-Raport KPI\tMar 4, 2026\t10\tINDEKA\tAsia\t7,00\t\t\t
-Fabric\tMar 6, 2026\t10\tSzkolenie\tAsia\t4,00\t\t\t
-Raport KPI Stany\tMar 6, 2026\t10\tINDEKA\tAsia\t3,00\t\t\t
-Weekly\tMar 9, 2026\t11\tOrganizacyjne\tAsia\t1,00\t\t\t
-Smurfit\tMar 9, 2026\t11\tSzkolenie\tAsia\t6,00\t\t\t
-Newsletter\tMar 10, 2026\t11\tDziałalność online\tAsia\t1,00\t\t\t
-Raport stany mag\tMar 10, 2026\t11\tINDEKA\tAsia\t4,00\t\t\t
-zmiany w modelu\tMar 10, 2026\t11\tTMB Inwestycyjny\tAsia\t2,50\t\t\t
-zmiany w raporcie\tMar 11, 2026\t11\tTMB Inwestycyjny\tAsia\t2,50\t\t\t
-Kickoff\tMar 2, 2026\t10\tINDEKA\tBartek\t2,00\t2,00\t100%\t0,0
-Dashboard v2\tMar 3, 2026\t10\tINDEKA\tBartek\t6,00\t\t\t
-Raport sprzedaż\tMar 4, 2026\t10\tSzkolenie\tBartek\t3,00\t\t\t
-Spotkanie\tMar 5, 2026\t10\tOrganizacyjne\tBartek\t1,00\t1,00\t\t
-ETL fix\tMar 6, 2026\t10\tINDEKA\tBartek\t5,00\t\t\t
-Weekly\tMar 9, 2026\t11\tOrganizacyjne\tBartek\t1,00\t\t\t
-Dashboard v2\tMar 10, 2026\t11\tINDEKA\tBartek\t8,00\t\t\t
-Raport TMB\tMar 11, 2026\t11\tTMB Inwestycyjny\tBartek\t4,00\t\t\t
-Kickoff\tMar 2, 2026\t10\tSzkolenie\tCelina\t2,00\t2,00\t\t
-Model danych\tMar 3, 2026\t10\tINDEKA\tCelina\t5,00\t\t\t
-Spotkanie\tMar 4, 2026\t10\tOrganizacyjne\tCelina\t0,50\t\t\t
-RLS setup\tMar 5, 2026\t10\tINDEKA\tCelina\t7,00\t\t\t
-Weekly\tMar 9, 2026\t11\tOrganizacyjne\tCelina\t1,00\t\t\t
-Model danych\tMar 10, 2026\t11\tINDEKA\tCelina\t6,00\t\t\t
-Ops raport\tMar 11, 2026\t11\tOps\tCelina\t3,00\t\t\t`;
+const DEMO = "Zadanie\tData Ewidencji\tTydzień\tProjekt\tOsoba\tWykonanie\tPlan\nSmurfit\tMar 2, 2026\t10\tSzkolenie\tAsia\t4,00\t4,00\nFabric\tMar 2, 2026\t10\tSzkolenie\tAsia\t1,00\t1,00\nRaport KPI\tMar 3, 2026\t10\tINDEKA\tAsia\t6,00\t\nWeekly\tMar 2, 2026\t10\tOrganizacyjne\tAsia\t1,00\t1,00\nSpotkanie\tMar 3, 2026\t10\tOrganizacyjne\tAsia\t0,50\t\nFabric\tMar 6, 2026\t10\tSzkolenie\tBartek\t3,00\t\nDashboard\tMar 3, 2026\t10\tINDEKA\tBartek\t6,00\t\nWeekly\tMar 2, 2026\t10\tOrganizacyjne\tBartek\t1,00\t1,00\nModel\tMar 3, 2026\t10\tINDEKA\tCelina\t5,00\t\nRLS\tMar 5, 2026\t10\tINDEKA\tCelina\t7,00\t\nWeekly\tMar 2, 2026\t10\tOrganizacyjne\tCelina\t1,00\t1,00";
 
 function parseNum(s) {
   if (!s || s.trim() === '' || s.trim() === 'No value') return 0;
   return parseFloat(s.replace(',', '.')) || 0;
 }
 
-function normalizeHeader(h) {
-  return h.trim().toLowerCase()
-    .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
-    .replace(/ł/g,'l').replace(/ń/g,'n').replace(/ó/g,'o')
-    .replace(/ś/g,'s').replace(/ź/g,'z').replace(/ż/g,'z');
-}
-
-function findCol(headers, patterns) {
-  return headers.findIndex(h => patterns.some(p => h.includes(p)));
+function getISOWeek(dateStr) {
+  const d = new Date(dateStr);
+  if (isNaN(d)) return 0;
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  const dayNum = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
 
 function parseData(raw) {
-  const lines = raw.trim().split('\n').filter(l => l.trim());
-  if (lines.length < 2) return [];
+  const allLines = raw.trim().split('\n').map(l => l.trimEnd()).filter(l => l.length > 0);
+  if (allLines.length < 2) return { rows: [], debug: 'Za mało linii danych.' };
 
-  const rawHeader = lines[0].split('\t');
-  const header = rawHeader.map(normalizeHeader);
-
-  const iWeek  = findCol(header, ['tydzien','week','tydz']);
-  const iProj  = findCol(header, ['projekt','project','proj']);
-  const iOsoba = findCol(header, ['osoba','person','user','uzytkownik','pracownik']);
-  const iExec  = findCol(header, ['wykonanie','exec','actual','wykonano','wykonan','rzeczyw']);
-  const iPlan  = findCol(header, ['plan']);
-  const iDate  = findCol(header, ['data','date']);
-
-  if ([iProj, iOsoba, iExec].some(i => i === -1)) return null;
-
-  const rows = [];
-  lines.slice(1).forEach(line => {
-    const cols = line.split('\t');
-    if (cols.length < 3) return;
-
-    let week = 0;
-    if (iWeek >= 0) {
-      week = parseInt(cols[iWeek]) || 0;
-    }
-    if (!week && iDate >= 0) {
-      const dateStr = (cols[iDate] || '').trim();
-      const d = new Date(dateStr);
-      if (!isNaN(d)) {
-        const jan1 = new Date(d.getFullYear(), 0, 1);
-        week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
-      }
-    }
-    if (!week) return;
-
-    const proj   = (cols[iProj]  || '').trim();
-    const person = (cols[iOsoba] || '').trim();
-    const exec   = parseNum(cols[iExec]);
-    const plan   = iPlan >= 0 ? parseNum(cols[iPlan]) : 0;
-
-    if (!proj || !person) return;
-    rows.push({ week, proj, person, exec, plan });
+  const dataLines = allLines.filter(l => {
+    const cols = l.split('\t');
+    return cols.some(c => /\d{4}-\d{2}-\d{2}/.test(c) || /[A-Za-z]{3}\s+\d+,\s*\d{4}/.test(c));
   });
 
-  return rows.length ? rows : null;
+  if (dataLines.length === 0) {
+    return { rows: null, debug: 'Brak wierszy z datą. Pierwsza linia: ' + allLines[0].substring(0, 80) };
+  }
+
+  const sample = dataLines[0].split('\t');
+  let iDate = -1, iWeek = -1, iProj = -1, iOsoba = -1, iExec = -1, iPlan = -1;
+
+  sample.forEach((val, i) => {
+    const v = val.trim();
+    if (/\d{4}-\d{2}-\d{2}T/.test(v) || /[A-Za-z]{3}\s+\d+,\s*\d{4}/.test(v)) { if (iDate < 0) iDate = i; }
+    else if (/^\d{1,3}$/.test(v) && iDate >= 0 && iWeek < 0) { iWeek = i; }
+  });
+
+  const allCols = dataLines.map(l => l.split('\t'));
+  const ncols = Math.max(...allCols.map(r => r.length));
+
+  for (let c = 0; c < ncols; c++) {
+    if (c === iDate || c === iWeek) continue;
+    const vals = allCols.map(r => (r[c] || '').trim()).filter(v => v && v !== 'No value');
+    if (!vals.length) continue;
+    const numCount = vals.filter(v => !isNaN(parseFloat(v.replace(',', '.')))).length;
+    const avgLen = vals.reduce((s, v) => s + v.length, 0) / vals.length;
+    const isNumCol = numCount > vals.length * 0.5;
+    const isTextCol = !isNumCol && avgLen > 2 && avgLen < 30;
+
+    if (isTextCol && iProj < 0) { iProj = c; }
+    else if (isTextCol && iOsoba < 0 && iProj >= 0) { iOsoba = c; }
+    else if (isNumCol && iExec < 0) { iExec = c; }
+    else if (isNumCol && iPlan < 0 && iExec >= 0) { iPlan = c; }
+  }
+
+  const debugInfo = `Wykryte kolumny → Data:${iDate} Tydzień:${iWeek} Projekt:${iProj} Osoba:${iOsoba} Wykonanie:${iExec} Plan:${iPlan} | Wierszy z datą: ${dataLines.length}`;
+
+  if ([iProj, iOsoba, iExec].some(i => i < 0)) {
+    return { rows: null, debug: debugInfo };
+  }
+
+  const rows = dataLines.map(line => {
+    const cols = line.split('\t');
+    let week = iWeek >= 0 ? parseInt(cols[iWeek]) || 0 : 0;
+    if (!week && iDate >= 0) week = getISOWeek((cols[iDate] || '').trim());
+    const proj = (cols[iProj] || '').trim();
+    const person = (cols[iOsoba] || '').trim();
+    const exec = parseNum(cols[iExec]);
+    const plan = iPlan >= 0 ? parseNum(cols[iPlan]) : 0;
+    return { week, proj, person, exec, plan };
+  }).filter(r => r.week && r.proj && r.person);
+
+  return { rows, debug: debugInfo };
 }
 
 function loadDemo() {
@@ -292,19 +184,18 @@ function loadDemo() {
 
 function parseAndRender() {
   const raw = document.getElementById('raw').value;
-  const parsed = parseData(raw);
-  if (!parsed) {
-    const firstLine = raw.trim().split('\n')[0] || '';
-    const cols = firstLine.split('\t').map(c => c.trim()).filter(Boolean);
-    document.getElementById('err').textContent = 'Nie znaleziono wymaganych kolumn. Wykryte nagłówki: ' + (cols.join(' | ') || '(brak — dane mogą być oddzielone spacją, nie tabulatorem)');
+  const { rows, debug } = parseData(raw);
+  document.getElementById('debug').textContent = debug || '';
+  if (!rows) {
+    document.getElementById('err').textContent = 'Nie udało się wykryć kolumn. Szczegóły powyżej.';
     return;
   }
-  if (parsed === null || parsed.length === 0) {
-    document.getElementById('err').textContent = 'Brak danych do wyświetlenia. Sprawdź czy wiersze zawierają Projekt, Osobę i Wykonanie.';
+  if (rows.length === 0) {
+    document.getElementById('err').textContent = 'Brak wierszy z danymi. Sprawdź czy dane zawierają datę, projekt, osobę i godziny.';
     return;
   }
   document.getElementById('err').textContent = '';
-  DATA = parsed;
+  DATA = rows;
   document.getElementById('output').style.display = 'block';
   renderAll();
 }
@@ -325,116 +216,68 @@ function renderAll() {
   const weeks = [...new Set(DATA.map(r => r.week))].sort((a, b) => a - b);
   const projs = [...new Set(DATA.map(r => r.proj))].sort();
   const colorMap = {};
-  projs.forEach((p, i) => colorMap[p] = PROJ_COLORS[i % PROJ_COLORS.length]);
+  projs.forEach((p, i) => { colorMap[p] = PROJ_COLORS[i % PROJ_COLORS.length]; });
 
-  // summary cards
   const totalExec = DATA.reduce((s, r) => s + r.exec, 0);
   const totalPlan = DATA.reduce((s, r) => s + r.plan, 0);
   const avgPct = Math.round((totalExec / (people.length * weeks.length * cap)) * 100);
   const cls = avgPct > 100 ? 'over' : avgPct >= 90 ? 'warn' : 'ok';
-  const totalFree = people.length * weeks.length * cap - totalExec;
+  const totalFree = Math.max(0, people.length * weeks.length * cap - totalExec);
+
   document.getElementById('summary-cards').innerHTML = `
     <div class="card"><div class="lbl">Łączne wykonanie</div><div class="val">${totalExec.toFixed(1)}h</div><div class="sub">${people.length} os · ${weeks.length} tygodnie</div></div>
     <div class="card"><div class="lbl">Łączny plan</div><div class="val">${totalPlan.toFixed(1)}h</div><div class="sub">wpisany plan</div></div>
     <div class="card"><div class="lbl">Śr. obłożenie</div><div class="val ${cls}">${avgPct}%</div><div class="sub">z ${cap}h pojemności</div></div>
-    <div class="card"><div class="lbl">Wolna pojemność</div><div class="val ok">${Math.max(0, totalFree).toFixed(1)}h</div><div class="sub">łącznie zespół</div></div>
+    <div class="card"><div class="lbl">Wolna pojemność</div><div class="val ok">${totalFree.toFixed(1)}h</div><div class="sub">łącznie zespół</div></div>
   `;
 
-  // chart
-  const labels = weeks.map(w => `Tyg. ${w}`);
+  const labels = weeks.map(w => 'Tyg. ' + w);
   let datasets = [];
-
   if (activeTab === 'exec' || activeTab === 'both') {
     projs.forEach(proj => {
-      const d = weeks.map(w => {
-        return DATA.filter(r => r.week === w && r.proj === proj).reduce((s, r) => s + r.exec, 0);
-      });
-      if (d.some(v => v > 0)) {
-        datasets.push({
-          label: proj + (activeTab === 'both' ? ' (wyk.)' : ''),
-          data: d,
-          backgroundColor: colorMap[proj],
-          stack: 'exec',
-        });
-      }
+      const d = weeks.map(w => DATA.filter(r => r.week === w && r.proj === proj).reduce((s, r) => s + r.exec, 0));
+      if (d.some(v => v > 0)) datasets.push({ label: proj + (activeTab === 'both' ? ' (wyk.)' : ''), data: d, backgroundColor: colorMap[proj], stack: 'exec' });
     });
   }
-
   if (activeTab === 'plan' || activeTab === 'both') {
     projs.forEach(proj => {
-      const d = weeks.map(w => {
-        return DATA.filter(r => r.week === w && r.proj === proj).reduce((s, r) => s + r.plan, 0);
-      });
-      if (d.some(v => v > 0)) {
-        datasets.push({
-          label: proj + (activeTab === 'both' ? ' (plan)' : ''),
-          data: d,
-          backgroundColor: colorMap[proj] + '66',
-          stack: 'plan',
-        });
-      }
+      const d = weeks.map(w => DATA.filter(r => r.week === w && r.proj === proj).reduce((s, r) => s + r.plan, 0));
+      if (d.some(v => v > 0)) datasets.push({ label: proj + (activeTab === 'both' ? ' (plan)' : ''), data: d, backgroundColor: colorMap[proj] + '55', stack: 'plan' });
     });
   }
 
   const titles = { exec: 'Wykonanie per projekt per tydzień (h)', plan: 'Plan per projekt per tydzień (h)', both: 'Plan vs Wykonanie per tydzień (h)' };
   document.getElementById('chart-title').textContent = titles[activeTab];
-
-  // legend
   document.getElementById('legend').innerHTML = projs.filter(p => datasets.some(d => d.label.startsWith(p))).map(p =>
-    `<span class="leg"><span class="leg-sq" style="background:${colorMap[p]}"></span>${p}</span>`
-  ).join('');
+    `<span class="leg"><span class="leg-sq" style="background:${colorMap[p]}"></span>${p}</span>`).join('');
 
   if (chart) chart.destroy();
   chart = new Chart(document.getElementById('myChart'), {
     type: 'bar',
     data: { labels, datasets },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}h`
-          }
-        }
-      },
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}h` } } },
       scales: {
         x: { stacked: true, grid: { display: false }, ticks: { font: { size: 11 } } },
-        y: {
-          stacked: true,
-          ticks: { font: { size: 11 }, callback: v => v + 'h' },
-          grid: { color: '#f0efea' }
-        }
+        y: { stacked: true, ticks: { font: { size: 11 }, callback: v => v + 'h' }, grid: { color: '#f0efea' } }
       }
     }
   });
 
-  // free capacity table
-  let tableHtml = `<table><thead><tr><th>Osoba</th>${weeks.map(w => `<th style="text-align:right">Tyg. ${w}</th>`).join('')}<th style="text-align:right">Razem wolne</th></tr></thead><tbody>`;
+  let tableHtml = '<table><thead><tr><th>Osoba</th>' + weeks.map(w => `<th style="text-align:right">Tyg. ${w}</th>`).join('') + '<th style="text-align:right">Razem wolne</th></tr></thead><tbody>';
   people.forEach(person => {
     const freeVals = weeks.map(w => {
       const used = DATA.filter(r => r.person === person && r.week === w).reduce((s, r) => s + r.exec, 0);
-      return Math.max(0, cap - used);
+      return { free: Math.max(0, cap - used), used };
     });
-    const totalFreeP = freeVals.reduce((s, v) => s + v, 0);
-    const avgUsed = weeks.map(w => DATA.filter(r => r.person === person && r.week === w).reduce((s, r) => s + r.exec, 0));
-    tableHtml += `<tr class="person-row"><td>${person}</td>`;
-    freeVals.forEach((free, i) => {
-      const used = cap - free;
+    const totalFreeP = freeVals.reduce((s, v) => s + v.free, 0);
+    tableHtml += `<tr><td style="font-weight:500">${person}</td>`;
+    freeVals.forEach(({ free, used }) => {
       const usedPct = Math.round((used / cap) * 100);
       const freePct = Math.round((free / cap) * 100);
-      const cls = usedPct > 100 ? 'over' : usedPct >= 90 ? 'warn' : free === 0 ? 'warn' : 'ok';
-      tableHtml += `<td>
-        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
-          <span class="${cls}" style="font-weight:500">${free.toFixed(1)}h wolne</span>
-          <span style="color:#aaa;font-size:10px">${used.toFixed(1)}/${cap}h</span>
-        </div>
-        <div class="bar-wrap">
-          <div class="bar-used" style="width:${Math.min(usedPct,100)}%;background:${usedPct>100?'#A32D2D':usedPct>=90?'#BA7517':'#7F77DD'};opacity:.7"></div>
-          <div class="bar-free" style="left:${Math.min(usedPct,100)}%;width:${freePct}%"></div>
-        </div>
-      </td>`;
+      const cls = usedPct > 100 ? 'over' : usedPct >= 90 ? 'warn' : 'ok';
+      tableHtml += `<td><div style="display:flex;justify-content:space-between;margin-bottom:3px"><span class="${cls}" style="font-weight:500">${free.toFixed(1)}h</span><span style="color:#aaa;font-size:10px">${used.toFixed(1)}/${cap}h</span></div><div class="bar-wrap"><div class="bar-used" style="width:${Math.min(usedPct,100)}%;background:${usedPct>100?'#A32D2D':usedPct>=90?'#BA7517':'#7F77DD'};opacity:.7"></div><div class="bar-free" style="left:${Math.min(usedPct,100)}%;width:${freePct}%"></div></div></td>`;
     });
     tableHtml += `<td class="num ok" style="font-weight:500">${totalFreeP.toFixed(1)}h</td></tr>`;
   });
