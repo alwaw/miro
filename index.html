@@ -227,26 +227,62 @@ function parseNum(s) {
   return parseFloat(s.replace(',', '.')) || 0;
 }
 
+function normalizeHeader(h) {
+  return h.trim().toLowerCase()
+    .replace(/ą/g,'a').replace(/ć/g,'c').replace(/ę/g,'e')
+    .replace(/ł/g,'l').replace(/ń/g,'n').replace(/ó/g,'o')
+    .replace(/ś/g,'s').replace(/ź/g,'z').replace(/ż/g,'z');
+}
+
+function findCol(headers, patterns) {
+  return headers.findIndex(h => patterns.some(p => h.includes(p)));
+}
+
 function parseData(raw) {
   const lines = raw.trim().split('\n').filter(l => l.trim());
   if (lines.length < 2) return [];
-  const header = lines[0].split('\t').map(h => h.trim().toLowerCase());
-  const iWeek = header.findIndex(h => h.includes('tydzień') || h.includes('tydzien') || h === 'week');
-  const iProj = header.findIndex(h => h.includes('projekt') || h.includes('project'));
-  const iOsoba = header.findIndex(h => h.includes('osoba') || h.includes('person'));
-  const iExec = header.findIndex(h => h.includes('wykonanie') || h.includes('exec') || h.includes('actual'));
-  const iPlan = header.findIndex(h => h.includes('plan'));
-  if ([iWeek, iProj, iOsoba, iExec].some(i => i === -1)) return null;
-  return lines.slice(1).map(line => {
+
+  const rawHeader = lines[0].split('\t');
+  const header = rawHeader.map(normalizeHeader);
+
+  const iWeek  = findCol(header, ['tydzien','week','tydz']);
+  const iProj  = findCol(header, ['projekt','project','proj']);
+  const iOsoba = findCol(header, ['osoba','person','user','uzytkownik','pracownik']);
+  const iExec  = findCol(header, ['wykonanie','exec','actual','wykonano','wykonan','rzeczyw']);
+  const iPlan  = findCol(header, ['plan']);
+  const iDate  = findCol(header, ['data','date']);
+
+  if ([iProj, iOsoba, iExec].some(i => i === -1)) return null;
+
+  const rows = [];
+  lines.slice(1).forEach(line => {
     const cols = line.split('\t');
-    return {
-      week: parseInt(cols[iWeek]) || 0,
-      proj: (cols[iProj] || '').trim(),
-      person: (cols[iOsoba] || '').trim(),
-      exec: parseNum(cols[iExec]),
-      plan: iPlan >= 0 ? parseNum(cols[iPlan]) : 0,
-    };
-  }).filter(r => r.week && r.person && r.proj);
+    if (cols.length < 3) return;
+
+    let week = 0;
+    if (iWeek >= 0) {
+      week = parseInt(cols[iWeek]) || 0;
+    }
+    if (!week && iDate >= 0) {
+      const dateStr = (cols[iDate] || '').trim();
+      const d = new Date(dateStr);
+      if (!isNaN(d)) {
+        const jan1 = new Date(d.getFullYear(), 0, 1);
+        week = Math.ceil(((d - jan1) / 86400000 + jan1.getDay() + 1) / 7);
+      }
+    }
+    if (!week) return;
+
+    const proj   = (cols[iProj]  || '').trim();
+    const person = (cols[iOsoba] || '').trim();
+    const exec   = parseNum(cols[iExec]);
+    const plan   = iPlan >= 0 ? parseNum(cols[iPlan]) : 0;
+
+    if (!proj || !person) return;
+    rows.push({ week, proj, person, exec, plan });
+  });
+
+  return rows.length ? rows : null;
 }
 
 function loadDemo() {
@@ -258,11 +294,13 @@ function parseAndRender() {
   const raw = document.getElementById('raw').value;
   const parsed = parseData(raw);
   if (!parsed) {
-    document.getElementById('err').textContent = 'Nie znaleziono kolumn: Tydzień, Projekt, Osoba, Wykonanie. Sprawdź czy dane są oddzielone tabulatorem.';
+    const firstLine = raw.trim().split('\n')[0] || '';
+    const cols = firstLine.split('\t').map(c => c.trim()).filter(Boolean);
+    document.getElementById('err').textContent = 'Nie znaleziono wymaganych kolumn. Wykryte nagłówki: ' + (cols.join(' | ') || '(brak — dane mogą być oddzielone spacją, nie tabulatorem)');
     return;
   }
-  if (parsed.length === 0) {
-    document.getElementById('err').textContent = 'Brak danych. Wklej dane z tabeli Miro.';
+  if (parsed === null || parsed.length === 0) {
+    document.getElementById('err').textContent = 'Brak danych do wyświetlenia. Sprawdź czy wiersze zawierają Projekt, Osobę i Wykonanie.';
     return;
   }
   document.getElementById('err').textContent = '';
